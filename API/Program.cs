@@ -13,6 +13,7 @@ builder.Services.AddDbContext<StoreContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 builder.Services.AddScoped<IProductRepository, ProductRepository>(); //scoped used because we want to create a new instance of the repository for each request
+builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>)); //register the generic repository
 var app = builder.Build();
 
 app.MapControllers();//map controllers to endpoints
