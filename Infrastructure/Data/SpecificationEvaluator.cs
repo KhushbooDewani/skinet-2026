@@ -26,6 +26,10 @@ public class SpecificationEvaluator<T>  where T : BaseEntity
       {
          query = query.Distinct();
       }
+      if(spec.IsPagingEnabled)
+      {
+         query = query.Skip(spec.Skip).Take(spec.Take);
+      }
       return query;
    }
     public static IQueryable<TResult> GetQuery<TSpecification, TResult>(IQueryable<T> inputQuery, ISpecification<T, TResult> spec)
@@ -47,12 +51,17 @@ public class SpecificationEvaluator<T>  where T : BaseEntity
       var selectQuery = query as IQueryable<TResult>;
      if(spec.Select != null)
      {
-        selectQuery = query.Select(spec.Select);
+      // This line transforms the query from 'Product' to 'string'
+      selectQuery = query.Select(spec.Select);
      }
      if(spec.IsDistinct)
      {
         selectQuery = selectQuery?.Distinct();
      }
+     if(spec.IsPagingEnabled)
+      {
+         selectQuery = selectQuery?.Skip(spec.Skip).Take(spec.Take);
+      }
       return selectQuery ?? query.Cast<TResult>();
    }
 }
