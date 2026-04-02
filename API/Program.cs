@@ -1,3 +1,4 @@
+using API.Middleware;
 using Core.Interfaces;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
@@ -14,8 +15,11 @@ builder.Services.AddDbContext<StoreContext>(options =>
 });
 builder.Services.AddScoped<IProductRepository, ProductRepository>(); //scoped used because we want to create a new instance of the repository for each request
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>)); //register the generic repository
-var app = builder.Build();
+builder.Services.AddCors();//add cors to allow cross-origin requests
 
+var app = builder.Build();
+app.UseMiddleware<ExceptionMiddleware>();//use the exception middleware to handle exceptions globally
+app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:4200","https://localhost:4200"));//allow cross-origin requests from the React app running on localhost:4200
 app.MapControllers();//map controllers to endpoints
 
 try
